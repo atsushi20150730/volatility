@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jar_backup" default="jar_target">
+
+  <property name="jar.file" value="C:/backup/0217_01.jar" />
+  <property name="target.folder" value="C:/asw-tour-work/git/atd-app/atd-csm-service/src/main/java/jp/co/anas/atd/csm/service/search/dto" />
+
+  <target name="jar_target">
+    <jar destfile="${jar.file}">
+        <fileset dir="${target.folder}">
+            <include name="**/*.java" />
+<!--
+            <include name="**/*.js" />
+            <include name="**/*.jsp" />
+            <include name="**/*.properties" />
+-->
+        </fileset>
+    </jar>
+  </target>
+</project>
