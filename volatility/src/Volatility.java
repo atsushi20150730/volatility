@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -13,23 +14,12 @@ public class Volatility {
     private final static String LS = System.getProperty("line.separator");
     private final static double D100 = Double.parseDouble("100");
 
-    private static File targetIn = new File(System.getProperty("user.dir") + "/src/txt/in");
+    private static File targetIn = new File(System.getProperty("user.dir") + "/src/txt");
     private static StringBuilder sb = new StringBuilder();
 
     private static void calc(File file) throws Exception {
         // sd
         String currency = extract(file.getName(), "[A-Z]{6}");
-//        double av = 0.0;
-//        double sd = 0.0;
-//        double cv = 0.0;
-//        for (int i = 0; i < 130; i++) {
-//            List<Double[]> results = read(file, i, 22);
-//            av = getAverage(results);
-//            sd = getSd(results);
-//            cv += sd / av;
-//        }
-//
-//        sb.append(currency + "," + cv + ",");
         sb.append(currency + ",");
 
         // high low
@@ -44,7 +34,7 @@ public class Volatility {
         for (Double[] candle : array) {
             Double highLow = Math.abs(candle[1] - candle[2]);
             if (!currency.contains("JPY")) {
-            	highLow = highLow * D100;
+                highLow = highLow * D100;
             }
             if (sort.get(highLow) == null) {
                 sort.put(highLow, highLow);
@@ -58,8 +48,9 @@ public class Volatility {
             }
         }
         List<Double> list = new ArrayList<Double>(sort.keySet());
+        System.out.println(MessageFormat.format("currency : {0}, size : {1}", currency, list.size()));
 
-        return list.get(52);
+        return list.get(60);
     }
 
     private static List<Double[]> read(File file, int start, int times) throws Exception {
@@ -124,7 +115,7 @@ public class Volatility {
     public static void main(String[] args) throws Exception {
         // execute
         if (!targetIn.exists()) {
-            targetIn = new File(System.getProperty("user.dir") + "/txt/in");
+            targetIn = new File(System.getProperty("user.dir") + "/txt");
         }
         exe();
         FileWriter fw = new FileWriter(new File(System.getProperty("user.home"), "result.csv"));
