@@ -50,7 +50,7 @@ public class Volatility {
         List<Double> list = new ArrayList<Double>(sort.keySet());
         System.out.println(MessageFormat.format("currency : {0}, size : {1}", currency, list.size()));
 
-        return list.get(60);
+        return list.get(61);
     }
 
     private static List<Double[]> read(File file, int start, int times) throws Exception {
