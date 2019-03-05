@@ -23,7 +23,7 @@ public class Volatility {
         sb.append(currency + ",");
 
         // high low
-        List<Double[]> results = read(file, 0, 65);
+        List<Double[]> results = read(file, 0, 26);
         double hl = getHighLow(results, currency);
         sb.append(hl + LS);
     }
@@ -50,7 +50,7 @@ public class Volatility {
         List<Double> list = new ArrayList<Double>(sort.keySet());
         System.out.println(MessageFormat.format("currency : {0}, size : {1}", currency, list.size()));
 
-        return list.get(61);
+        return list.get(22);
     }
 
     private static List<Double[]> read(File file, int start, int times) throws Exception {
