@@ -37,7 +37,7 @@ public class Calc {
 		BigDecimal work2 = Util.B1.divide(median, 10, BigDecimal.ROUND_HALF_UP);
 		BigDecimal lots = amount.multiply(work1);
 		lots = lots.multiply(work2).multiply(Util.B100);
-		System.out.print(currency + " : " + lots.intValue() + Util.LS + Util.LS + Util.LS);
+		System.out.print(currency + " : " + lots.intValue() + " median : " + medianLimit + Util.LS + Util.LS + Util.LS);
 
 		// buy
 		BigDecimal startBuy = openPrice.subtract(medianStart);
