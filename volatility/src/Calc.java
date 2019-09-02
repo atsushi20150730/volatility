@@ -37,20 +37,24 @@ public class Calc {
 		BigDecimal work2 = Util.B1.divide(median, 10, BigDecimal.ROUND_HALF_UP);
 		BigDecimal lots = amount.multiply(work1);
 		lots = lots.multiply(work2).multiply(Util.B100);
-		System.out.print(currency + " : " + lots.intValue() + " median : " + medianLimit + Util.LS + Util.LS + Util.LS);
+		System.out.println(currency + " : " + String.format("%,d", lots.intValue()));
+		System.out.println("median : " + medianLimit + Util.LS + Util.LS);
 
 		// buy
 		BigDecimal startBuy = openPrice.subtract(medianStart);
 		BigDecimal limitBuy = startBuy.add(medianLimit);
 		BigDecimal stopBuy = startBuy.subtract(medianLimit);
-		System.out.print("Buy  : " + startBuy + " " + limitBuy + " " + stopBuy + Util.LS + Util.LS + Util.LS + Util.LS
-				+ Util.LS);
+		System.out.println("Buy  : " + startBuy);
+	    System.out.println("       " + limitBuy);
+	    System.out.println("       " + stopBuy + Util.LS + Util.LS);
 
 		// sell
 		BigDecimal startSell = openPrice.add(medianStart);
 		BigDecimal limitSell = startSell.subtract(medianLimit);
 		BigDecimal stopSell = startSell.add(medianLimit);
-		System.out.print("Sell : " + startSell + " " + limitSell + " " + stopSell + Util.LS);
+		System.out.println("Sell : " + startSell);
+		System.out.println("       " + limitSell);
+		System.out.println("       " + stopSell);
 	}
 
 	public static void main(String[] args) throws Exception {
