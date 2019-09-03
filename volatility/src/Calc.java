@@ -10,10 +10,11 @@ public class Calc {
     private static ResourceBundle rate = ResourceBundle.getBundle("rate");
     private static ResourceBundle open = ResourceBundle.getBundle("open");
     private static StringBuilder sb = new StringBuilder();
+    private static String currency = "";
 
     private static void exe() throws Exception {
         // currency
-        String currency = target.getString("currency").toUpperCase();
+        currency = target.getString("currency").toUpperCase();
 
         // jpy rate
         BigDecimal jpyRate = new BigDecimal(rate.getString(currency.substring(3)));
@@ -71,7 +72,7 @@ public class Calc {
         }
         exe();
 
-        File output = new File(System.getProperty("user.home"), "output.txt");
+        File output = new File(System.getProperty("user.home"), currency + ".txt");
         FileWriter fw = new FileWriter(output);
         fw.write(sb.toString());
         fw.close();
