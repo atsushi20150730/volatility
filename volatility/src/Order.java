@@ -17,7 +17,7 @@ public class Order {
         openPrice = Util.halfUp(currency, openPrice);
 
         // median
-        BigDecimal median = Util.getMedian(currency, targetIn);
+        BigDecimal median = Util.getMedian(currency, targetIn, true);
         BigDecimal medianLimit = Util.halfUp(median, 1);
         if (!"JPY".equals(currency.substring(3))) {
             medianLimit = medianLimit.divide(Util.B100);

@@ -27,12 +27,14 @@ public class Calc {
         BigDecimal amount = new BigDecimal(target.getString("amount"));
 
         // median
-        BigDecimal median = Util.getMedian(currency, targetIn);
-        BigDecimal medianStart = Util.halfUp(median.divide(Util.B3, 10, BigDecimal.ROUND_HALF_UP), 1);
-        BigDecimal medianLimit = Util.halfUp(median, 1);
+        BigDecimal median = Util.getMedian(currency, targetIn, true);
+        median = Util.halfUp(median, 1);
+        BigDecimal medianLimit = new BigDecimal(median.toString());
+        BigDecimal medianStart = Util.getMedian(currency, targetIn, false);
+        medianStart = Util.halfUp(medianStart, 1);
         if (!"JPY".equals(currency.substring(3))) {
-            medianStart = medianStart.divide(Util.B100);
             medianLimit = medianLimit.divide(Util.B100);
+            medianStart = medianStart.divide(Util.B100);
         }
 
         // Lots
@@ -41,10 +43,10 @@ public class Calc {
         BigDecimal lots = amount.multiply(work1);
         lots = lots.multiply(work2).multiply(Util.B100);
         println(currency + " : " + lots.intValue());
-        println("median : " + medianLimit + Util.LS + Util.LS);
+        println("median : " + median + Util.LS + Util.LS);
 
         // buy
-        BigDecimal startBuy = openPrice.subtract(medianStart);
+        BigDecimal startBuy = openPrice.add(medianStart);
         BigDecimal limitBuy = startBuy.add(medianLimit);
         BigDecimal stopBuy = startBuy.subtract(medianLimit);
         println("Buy  : " + startBuy);
@@ -52,7 +54,7 @@ public class Calc {
         println("       " + stopBuy + Util.LS + Util.LS);
 
         // sell
-        BigDecimal startSell = openPrice.add(medianStart);
+        BigDecimal startSell = openPrice.subtract(medianStart);
         BigDecimal limitSell = startSell.subtract(medianLimit);
         BigDecimal stopSell = startSell.add(medianLimit);
         println("Sell : " + startSell);
