@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.ResourceBundle;
 
@@ -8,8 +7,6 @@ public class Calc {
     private static File targetIn = new File(System.getProperty("user.dir") + "/all");
     private static ResourceBundle target = ResourceBundle.getBundle("target");
     private static ResourceBundle rate = ResourceBundle.getBundle("rate");
-    private static ResourceBundle open = ResourceBundle.getBundle("open");
-    private static StringBuilder sb = new StringBuilder();
     private static String currency = "";
 
     private static void exe() throws Exception {
@@ -20,8 +17,7 @@ public class Calc {
         BigDecimal jpyRate = new BigDecimal(rate.getString(currency.substring(3)));
 
         // open price
-        BigDecimal openPrice = new BigDecimal(open.getString(currency));
-        openPrice = Util.halfUp(currency, openPrice);
+        BigDecimal openPrice = new BigDecimal(target.getString("price"));
 
         // total amount
         BigDecimal amount = new BigDecimal(target.getString("amount"));
@@ -29,41 +25,34 @@ public class Calc {
         // median
         BigDecimal median = Util.getMedian(currency, targetIn, true);
         median = Util.halfUp(median, 1);
-        BigDecimal medianLimit = new BigDecimal(median.toString());
-        BigDecimal medianStart = Util.getMedian(currency, targetIn, false);
-        medianStart = Util.halfUp(medianStart, 1);
+        BigDecimal limitStop = new BigDecimal(median.toString());
         if (!"JPY".equals(currency.substring(3))) {
-            medianLimit = medianLimit.divide(Util.B100);
-            medianStart = medianStart.divide(Util.B100);
+            limitStop = limitStop.divide(Util.B100);
         }
 
         // Lots
         BigDecimal work1 = Util.B100.divide(jpyRate, 10, BigDecimal.ROUND_HALF_UP);
         BigDecimal work2 = Util.B1.divide(median, 10, BigDecimal.ROUND_HALF_UP);
-        BigDecimal lots = amount.multiply(work1);
-        lots = lots.multiply(work2).multiply(Util.B100);
-        println(currency + " : " + lots.intValue());
-        println("median : " + median + Util.LS + Util.LS);
+        BigDecimal work3 = work1.multiply(work2);
+        BigDecimal lots = amount.multiply(work3);
+        lots = lots.multiply(Util.B100);
+        System.out.println(currency + "     : " + lots.intValue());
+        System.out.println("jpy rate   : " + jpyRate);
+        System.out.println("amount     : " + amount);
+        System.out.println("median     : " + median);
+        System.out.println("open price : " + openPrice + Util.LS + Util.LS);
 
         // buy
-        BigDecimal startBuy = openPrice.add(medianStart);
-        BigDecimal limitBuy = startBuy.add(medianLimit);
-        BigDecimal stopBuy = startBuy.subtract(medianLimit);
-        println("Buy  : " + startBuy);
-        println("       " + limitBuy);
-        println("       " + stopBuy + Util.LS + Util.LS);
+        BigDecimal limitBuy = openPrice.add(limitStop);
+        BigDecimal stopBuy = openPrice.subtract(limitStop);
+        System.out.println("Buy  : " + limitBuy);
+        System.out.println("       " + stopBuy + Util.LS + Util.LS);
 
         // sell
-        BigDecimal startSell = openPrice.subtract(medianStart);
-        BigDecimal limitSell = startSell.subtract(medianLimit);
-        BigDecimal stopSell = startSell.add(medianLimit);
-        println("Sell : " + startSell);
-        println("       " + limitSell);
-        println("       " + stopSell);
-    }
-
-    private static void println(String val) {
-        sb.append(val + Util.LS);
+        BigDecimal limitSell = openPrice.subtract(limitStop);
+        BigDecimal stopSell = openPrice.add(limitStop);
+        System.out.println("Sell : " + limitSell);
+        System.out.println("       " + stopSell);
     }
 
     public static void main(String[] args) throws Exception {
@@ -73,10 +62,5 @@ public class Calc {
             targetIn = new File(System.getProperty("user.dir") + "/src/all");
         }
         exe();
-
-        File output = new File(System.getProperty("user.home"), currency + ".txt");
-        FileWriter fw = new FileWriter(output);
-        fw.write(sb.toString());
-        fw.close();
     }
 }
