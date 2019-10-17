@@ -9,13 +9,14 @@ import java.util.TreeMap;
 public class Util {
 
     public static final String LS = System.getProperty("line.separator");
-
     public static final BigDecimal B1 = new BigDecimal("1");
+    public static final BigDecimal B2 = new BigDecimal("2");
     public static final BigDecimal B3 = new BigDecimal("3");
     public static final BigDecimal B100 = new BigDecimal("100");
 
-    private static final double DUPLI = Double.parseDouble("0.00000001");
-    private static final String PATTERN = "^.[0-9]{4}/[0-9]{2}/[0-9]{2}.$";
+    private static final int LIST_SIZE = 52;
+    private static final int MEDIAN = 25;
+    private static final BigDecimal DUPLI = new BigDecimal("0.0000000001");
 
     public static BigDecimal halfUp(String currency, BigDecimal value) {
         BigDecimal result = new BigDecimal(value.toString());
@@ -45,62 +46,60 @@ public class Util {
         }
 
         List<Candle> candleList = read(target);
-        Double result = getMedian(candleList, currency, highLowFlag);
+        BigDecimal result = getMedian(candleList, currency, highLowFlag);
 
-        return new BigDecimal(result.toString());
+        return result;
     }
 
-    private static double getMedian(List<Candle> candleList, String currency, boolean highLowFlag) {
-        TreeMap<Double, Candle> sort = new TreeMap<Double, Candle>();
+    private static BigDecimal getMedian(List<Candle> candleList, String currency, boolean highLowFlag) {
+        TreeMap<BigDecimal, Candle> sort = new TreeMap<>();
 
         for (Candle candle : candleList) {
-            double abs = Math.abs(candle.high.doubleValue() - candle.low.doubleValue());
+            BigDecimal abs = candle.high.subtract(candle.low).abs();
             if (!highLowFlag) {
-                abs = Math.abs(candle.open.doubleValue() - candle.high.doubleValue());
-                double openLow = Math.abs(candle.open.doubleValue() - candle.low.doubleValue());
-                if (openLow > abs) {
+                abs = candle.open.subtract(candle.high).abs();
+                BigDecimal openLow = candle.open.subtract(candle.low).abs();
+                if (openLow.compareTo(abs) > 0) {
                     abs = openLow;
                 }
             }
             if (!currency.contains("JPY")) {
-                abs = abs * B100.doubleValue();
+                abs = abs.multiply(B100);
             }
             if (sort.get(abs) == null) {
                 sort.put(abs, candle);
             } else {
-                for (double i = DUPLI;; i += DUPLI) {
-                    if (sort.get(abs + i) == null) {
-                        sort.put(abs + i, candle);
+                while (true) {
+                    abs = abs.add(DUPLI);
+                    if (sort.get(abs) == null) {
+                        sort.put(abs, candle);
                         break;
                     }
                 }
             }
         }
-        List<Double> list = new ArrayList<Double>(sort.keySet());
-        double result = (list.get(25) + list.get(26)) / Double.parseDouble("2");
+        List<BigDecimal> list = new ArrayList<>(sort.keySet());
+        BigDecimal result = list.get(MEDIAN).add(list.get(MEDIAN + 1)).divide(B2);
 
         return result;
     }
 
     private static List<Candle> read(File file) throws Exception {
         // results
-        List<Candle> results = new ArrayList<Candle>();
+        List<Candle> results = new ArrayList<>();
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
 
-        while (true) {
+        for (int i = 0;; i++) {
             String line = br.readLine();
             if (line == null) {
                 break;
             }
+            if (i < 1) {
+                continue;
+            }
             String[] cols = line.split(",");
-            if (cols.length < 2) {
-                continue;
-            }
-            if (!cols[1].matches(PATTERN)) {
-                continue;
-            }
 
             Candle candle = new Candle();
             candle.open = new BigDecimal(cols[2]);
@@ -109,7 +108,7 @@ public class Util {
             candle.close = new BigDecimal(cols[5]);
 
             results.add(candle);
-            if (results.size() == 52) {
+            if (results.size() == LIST_SIZE) {
                 break;
             }
         }
