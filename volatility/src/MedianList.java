@@ -19,22 +19,9 @@ public class MedianList {
         if (!targetIn.exists()) {
             targetIn = new File(System.getProperty("user.dir") + "/src/all");
         }
-        exe("AUDCHF");
-        exe("AUDJPY");
-        exe("AUDNZD");
         exe("AUDUSD");
-        exe("CADJPY");
-        exe("CHFJPY");
-        exe("EURAUD");
-        exe("EURCHF");
-        exe("EURGBP");
-        exe("EURJPY");
         exe("EURUSD");
-        exe("GBPAUD");
-        exe("GBPCHF");
-        exe("GBPJPY");
         exe("GBPUSD");
-        exe("NZDJPY");
         exe("NZDUSD");
         exe("USDCAD");
         exe("USDCHF");
