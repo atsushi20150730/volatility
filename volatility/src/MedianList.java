@@ -12,7 +12,7 @@ public class MedianList {
         BigDecimal median = Util.getMedian(currency, targetIn, true);
         median = Util.halfUp(median, 1);
 
-        System.out.println(currency + HT + median);
+        System.out.println(median);
     }
 
     public static void main(String[] args) throws Exception {
